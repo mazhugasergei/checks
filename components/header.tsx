@@ -24,7 +24,12 @@ export default function Header() {
 
   return (
     <header className="flex gap-2 justify-between items-center">
-      <div />
+      <nav className="flex gap-2 items-center">
+        <Link href="/" className={buttonVariants({ size: "sm", variant: "link" })}>
+          Главная
+        </Link>
+      </nav>
+
       {user ? (
         <Menubar className="border-none shadow-none p-0">
           <MenubarMenu>
@@ -47,12 +52,12 @@ export default function Header() {
         </Menubar>
       ) : (
         <div className="flex gap-2 items-center">
-          <Link href="/login" className={buttonVariants({ size: "sm", className: "rounded-full" })}>
+          <Link href="/login" className={buttonVariants({ size: "sm", className: "!rounded-full" })}>
             Войти
           </Link>
           <Link
             href="/signup"
-            className={buttonVariants({ size: "sm", variant: "outline", className: "rounded-full" })}
+            className={buttonVariants({ size: "sm", variant: "outline", className: "!rounded-full" })}
           >
             Регистрация
           </Link>
