@@ -33,7 +33,7 @@
 
 @layer components {
   .container {
-    @apply border rounded-md p-2;
+    @apply border rounded-lg p-2;
   }
 }
 
