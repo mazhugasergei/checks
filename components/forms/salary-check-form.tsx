@@ -1,31 +1,47 @@
 "use client"
 
+import { createCheck } from "@/app/actions/check"
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
 import { Input } from "@/components/ui/input"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { User } from "@prisma/client"
+import { toast } from "@/hooks/use-toast"
+import { Check, User } from "@prisma/client"
 import { format } from "date-fns"
 import { Calendar as CalendarIcon, LoaderCircle } from "lucide-react"
+import Link from "next/link"
 import React from "react"
+import { ToastAction } from "../ui/toast"
 
 export default function SalaryCheckForm({ user }: { user?: Omit<User, "password"> | null }) {
   const [submitting, setSubmitting] = React.useState(false)
 
-  const [data, setData] = React.useState({
+  const defaultData: Omit<Check, "id"> = {
     name: user ? user.firstName + " " + (user.middleName ? `${user.middleName} ` : "") + user.lastName : "",
     basis: "",
     period: "",
     amount: "",
+    userId: user ? user.id : null,
     createdAt: new Date(),
-  })
+  }
+
+  const [data, setData] = React.useState(defaultData)
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault()
     setSubmitting(true)
-    console.log(data)
+    await createCheck(data)
     setSubmitting(false)
+    toast({
+      title: "Расходный кассовый ордер успешно создан",
+      action: (
+        <ToastAction altText="Расходники">
+          <Link href="/checks">Расходники</Link>
+        </ToastAction>
+      ),
+    })
+    setData(defaultData)
   }
 
   return (
