@@ -1,8 +1,6 @@
 "use client"
 
 import { signUp } from "@/app/actions/logging"
-import { useStore } from "@/hooks/use-store"
-import { toast } from "@/hooks/use-toast"
 import { LoaderCircle } from "lucide-react"
 import { useRouter } from "next/navigation"
 import React from "react"
@@ -11,7 +9,7 @@ import { Input } from "../ui/input"
 
 export default function SignUpForm() {
   const router = useRouter()
-  const setUser = useStore((state) => state.setUser)
+  const [user, setUser] = React.useState<User | null>()
   const [data, setData] = React.useState<User & { password: string }>({
     username: "",
     password: "",
@@ -25,17 +23,6 @@ export default function SignUpForm() {
     e.preventDefault()
     setSubmitting(true)
     await signUp(data)
-      .then((user) => {
-        setUser(user)
-        router.push("/")
-      })
-      .catch((e) => {
-        toast({
-          title: "Ошибка",
-          description: e.message,
-          variant: "destructive",
-        })
-      })
     setSubmitting(false)
   }
 

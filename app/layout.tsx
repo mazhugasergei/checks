@@ -1,4 +1,3 @@
-import InitialLogIn from "@/components/auth/initial-login"
 import Header from "@/components/header"
 import { Toaster } from "@/components/ui/toaster"
 import type { Metadata } from "next"
@@ -16,7 +15,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <Header />
           {/* <UserInfo /> */}
           {children}
-          <InitialLogIn />
           <Toaster />
         </div>
       </body>

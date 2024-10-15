@@ -1,6 +1,11 @@
 import SignupForm from "@/components/auth/signup-form"
+import { redirect } from "next/navigation"
+import { tokenLogIn } from "../actions/logging"
 
-export default function Registration() {
+export default async function SignUp() {
+  const { user } = await tokenLogIn()
+  if (user) redirect("/")
+
   return (
     <main>
       <SignupForm />

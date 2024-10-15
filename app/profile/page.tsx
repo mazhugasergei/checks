@@ -1,14 +1,13 @@
-import LogInForm from "@/components/auth/login-form"
 import { redirect } from "next/navigation"
 import { tokenLogIn } from "../actions/logging"
 
-export default async function LogIn() {
+export default async function Profile() {
   const { user } = await tokenLogIn()
-  if (user) redirect("/")
+  if (!user) redirect("/login")
 
   return (
     <main>
-      <LogInForm />
+      <pre>{JSON.stringify(user, null, 2)}</pre>
     </main>
   )
 }

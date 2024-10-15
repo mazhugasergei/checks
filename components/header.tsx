@@ -1,6 +1,6 @@
 "use client"
 
-import { logOut } from "@/app/actions/logging"
+import { logOut, tokenLogIn } from "@/app/actions/logging"
 import {
   Menubar,
   MenubarContent,
@@ -9,13 +9,18 @@ import {
   MenubarSeparator,
   MenubarTrigger,
 } from "@/components/ui/menubar"
-import { useStore } from "@/hooks/use-store"
 import { User } from "lucide-react"
 import Link from "next/link"
+import React from "react"
 import { buttonVariants } from "./ui/button"
+import { Skeleton } from "./ui/skeleton"
 
 export default function Header() {
-  const user = useStore((state) => state.user)
+  const [user, setUser] = React.useState<User | null>()
+
+  React.useEffect(() => {
+    tokenLogIn().then(({ user }) => setUser(user))
+  }, [])
 
   const handleLogOut = () => {
     logOut()
@@ -30,14 +35,41 @@ export default function Header() {
         </Link>
       </nav>
 
-      {user ? (
+      {/* loading */}
+      {user === undefined && <Skeleton className="h-8 w-20 rounded-full" />}
+
+      {/* not logged in */}
+      {user === null && (
+        <div className="flex gap-2 items-center">
+          <Link href="/login" className={buttonVariants({ size: "sm", className: "!rounded-full" })}>
+            Войти
+          </Link>
+          <Link
+            href="/signup"
+            className={buttonVariants({ size: "sm", variant: "outline", className: "!rounded-full" })}
+          >
+            Регистрация
+          </Link>
+        </div>
+      )}
+
+      {/* logged in */}
+      {user && (
         <Menubar className="border-none shadow-none p-0">
           <MenubarMenu>
-            <MenubarTrigger className="cursor-pointer h-9 w-9 grid place-items-center border rounded-full p-0">
+            <MenubarTrigger className="cursor-pointer h-9 w-9 grid place-items-center !bg-background border rounded-full p-0">
               <User size={16} />
             </MenubarTrigger>
-            <MenubarContent>
-              <div></div>
+            <MenubarContent align="end">
+              <MenubarItem asChild className="leading-5 text-sm py-1.5 px-2">
+                <Link href="/profile" className="group cursor-pointer flex flex-col !items-start">
+                  <span className="font-bold">
+                    {user.firstName + " " + (user.middleName ? `${user.middleName} ` : "") + user.lastName}
+                  </span>
+                  <span className="group-hover:underline">{user.username}</span>
+                </Link>
+              </MenubarItem>
+              <MenubarSeparator />
               <MenubarItem asChild>
                 <Link href="/profile" className="cursor-pointer">
                   Профиль
@@ -50,18 +82,6 @@ export default function Header() {
             </MenubarContent>
           </MenubarMenu>
         </Menubar>
-      ) : (
-        <div className="flex gap-2 items-center">
-          <Link href="/login" className={buttonVariants({ size: "sm", className: "!rounded-full" })}>
-            Войти
-          </Link>
-          <Link
-            href="/signup"
-            className={buttonVariants({ size: "sm", variant: "outline", className: "!rounded-full" })}
-          >
-            Регистрация
-          </Link>
-        </div>
       )}
     </header>
   )

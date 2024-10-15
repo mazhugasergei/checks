@@ -1,28 +1,46 @@
 "use client"
 
+import { tokenLogIn } from "@/app/actions/logging"
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
 import { Input } from "@/components/ui/input"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { cn } from "@/lib/utils"
 import { format } from "date-fns"
 import { Calendar as CalendarIcon, LoaderCircle } from "lucide-react"
 import React from "react"
-import { useStore } from "../hooks/use-store"
 
 export default function SalaryCheckForm() {
   const [submitting, setSubmitting] = React.useState(false)
-  const user = useStore((state) => state.user)
-  const fullName = user ? user.firstName + " " + (user.middleName ? `${user.middleName} ` : "") + user.lastName : null
+  const [user, setUser] = React.useState<User | null>()
   const currentDate = new Date()
-  const [date, setDate] = React.useState<Date | undefined>(currentDate)
+
+  const [data, setData] = React.useState({
+    name: "",
+    basis: "",
+    period: "",
+    amount: "",
+    createdAt: new Date(),
+  })
+
+  React.useEffect(() => {
+    tokenLogIn().then(({ user }) => {
+      setUser(user)
+    })
+  }, [])
+
+  React.useEffect(() => {
+    if (user) {
+      setData({
+        ...data,
+        name: user.firstName + " " + (user.middleName ? `${user.middleName} ` : "") + user.lastName,
+      })
+    }
+  }, [user])
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault()
     setSubmitting(true)
-    const formData = new FormData(e.target as HTMLFormElement)
-    const data = Object.fromEntries(formData)
     console.log(data)
     setSubmitting(false)
   }
@@ -32,11 +50,11 @@ export default function SalaryCheckForm() {
       <h1 className="uppercase font-bold text-center">Расходный кассовый ордер</h1>
 
       {/* name */}
-      <Input required disabled name="name" placeholder="Выдать" defaultValue={fullName ?? ""} />
+      <Input required disabled name="name" placeholder="Выдать" value={data.name} />
 
       <div className="grid grid-cols-2 gap-2">
         {/* basis */}
-        <Select required name="basis">
+        <Select required name="basis" value={data.basis} onValueChange={(value) => setData({ ...data, basis: value })}>
           <SelectTrigger required placeholder="Основание">
             <SelectValue />
           </SelectTrigger>
@@ -47,7 +65,12 @@ export default function SalaryCheckForm() {
         </Select>
 
         {/* period */}
-        <Select required name="period">
+        <Select
+          required
+          name="period"
+          value={data.period}
+          onValueChange={(value) => setData({ ...data, period: value })}
+        >
           <SelectTrigger required placeholder="Период">
             <SelectValue />
           </SelectTrigger>
@@ -75,7 +98,8 @@ export default function SalaryCheckForm() {
           name="amount"
           type="number"
           placeholder="Сумма"
-          onChange={(e) => (e.target.value = e.target.value.replace(/[^0-9]/g, ""))}
+          value={data.amount}
+          onChange={(e) => setData({ ...data, amount: e.target.value.replace(/[^0-9]/g, "") })}
           className="pr-8"
         />
         <span className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground">₽</span>
@@ -85,18 +109,23 @@ export default function SalaryCheckForm() {
         {/* date */}
         <Popover>
           <PopoverTrigger disabled asChild>
-            <Button variant={"outline"} className={cn("justify-start font-normal", !date && "text-muted-foreground")}>
+            <Button variant="outline" className="justify-start font-normal">
               <CalendarIcon className="mr-2 h-4 w-4" />
-              {date ? format(date, "dd MMMM yyyy") : <span>Выберите дату</span>}
+              {format(data.createdAt, "dd MMMM yyyy")}
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-auto p-0">
-            <Calendar mode="single" selected={date} onSelect={setDate} initialFocus />
+            <Calendar mode="single" selected={data.createdAt} initialFocus />
           </PopoverContent>
         </Popover>
       </div>
 
-      <Button>{submitting ? <LoaderCircle size={18} className="animate-spin" /> : "Отправить"}</Button>
+      <Button disabled={!user || submitting}>
+        {submitting ? <LoaderCircle size={18} className="animate-spin" /> : "Отправить"}
+      </Button>
+
+      {/* debug */}
+      {/* <pre>{JSON.stringify(data, null, 2)}</pre> */}
     </form>
   )
 }
