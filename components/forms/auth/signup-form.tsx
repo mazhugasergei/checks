@@ -118,9 +118,8 @@ export default function SignUpForm() {
 
       <Button>{submitting ? <LoaderCircle size={18} className="animate-spin" /> : "Подтвердить"}</Button>
 
-      <pre>
-        <code>{JSON.stringify(data, null, 2)}</code>
-      </pre>
+      {/* debug */}
+      {/* <pre>{JSON.stringify(data, null, 2)}</pre> */}
     </form>
   )
 }

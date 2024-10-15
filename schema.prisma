@@ -17,4 +17,6 @@ model User {
   role       String   @default("user")
   updatedAt  DateTime @updatedAt @map("updated_at")
   createdAt  DateTime @default(now()) @map("created_at")
+
+  @@map("user")
 }
