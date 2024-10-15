@@ -1,6 +1,7 @@
 "use client"
 
 import { logIn } from "@/app/actions/logging"
+import { PasswordInput } from "@/components/password-input"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { toast } from "@/hooks/use-toast"
@@ -39,15 +40,15 @@ export default function LogInForm() {
 
       <Input
         required
+        placeholder="Логин"
         value={data.username ?? ""}
         onChange={(e) => setData({ ...data, username: e.target.value })}
-        placeholder="Логин"
       />
-      <Input
+      <PasswordInput
         required
+        placeholder="Пароль"
         value={data.password ?? ""}
         onChange={(e) => setData({ ...data, password: e.target.value })}
-        placeholder="Пароль"
       />
 
       <Button>{submitting ? <LoaderCircle size={18} className="animate-spin" /> : "Подтвердить"}</Button>
