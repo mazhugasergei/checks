@@ -1,4 +1,4 @@
-import LogInForm from "@/components/auth/login-form"
+import LogInForm from "@/components/forms/auth/login-form"
 import { redirect } from "next/navigation"
 import { tokenLogIn } from "../actions/logging"
 

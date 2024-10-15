@@ -1,42 +1,25 @@
 "use client"
 
-import { tokenLogIn } from "@/app/actions/logging"
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
 import { Input } from "@/components/ui/input"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { User } from "@prisma/client"
 import { format } from "date-fns"
 import { Calendar as CalendarIcon, LoaderCircle } from "lucide-react"
 import React from "react"
 
-export default function SalaryCheckForm() {
+export default function SalaryCheckForm({ user }: { user?: Omit<User, "password"> | null }) {
   const [submitting, setSubmitting] = React.useState(false)
-  const [user, setUser] = React.useState<User | null>()
-  const currentDate = new Date()
 
   const [data, setData] = React.useState({
-    name: "",
+    name: user ? user.firstName + " " + (user.middleName ? `${user.middleName} ` : "") + user.lastName : "",
     basis: "",
     period: "",
     amount: "",
     createdAt: new Date(),
   })
-
-  React.useEffect(() => {
-    tokenLogIn().then(({ user }) => {
-      setUser(user)
-    })
-  }, [])
-
-  React.useEffect(() => {
-    if (user) {
-      setData({
-        ...data,
-        name: user.firstName + " " + (user.middleName ? `${user.middleName} ` : "") + user.lastName,
-      })
-    }
-  }, [user])
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -50,7 +33,14 @@ export default function SalaryCheckForm() {
       <h1 className="uppercase font-bold text-center">Расходный кассовый ордер</h1>
 
       {/* name */}
-      <Input required disabled name="name" placeholder="Выдать" value={data.name} />
+      <Input
+        required
+        disabled={!!user}
+        name="name"
+        placeholder="Выдать"
+        value={data.name}
+        onChange={(e) => (user ? null : setData({ ...data, name: e.target.value }))}
+      />
 
       <div className="grid grid-cols-2 gap-2">
         {/* basis */}
@@ -120,7 +110,7 @@ export default function SalaryCheckForm() {
         </Popover>
       </div>
 
-      <Button disabled={!user || submitting}>
+      <Button disabled={submitting}>
         {submitting ? <LoaderCircle size={18} className="animate-spin" /> : "Отправить"}
       </Button>
 

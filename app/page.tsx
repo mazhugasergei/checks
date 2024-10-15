@@ -1,9 +1,12 @@
-import SalaryCheckForm from "@/components/salary-check-form"
+import SalaryCheckForm from "@/components/forms/salary-check-form"
+import { tokenLogIn } from "./actions/logging"
 
-export default function Home() {
+export default async function Home() {
+  const { user } = await tokenLogIn()
+
   return (
     <main>
-      <SalaryCheckForm />
+      <SalaryCheckForm user={user} />
     </main>
   )
 }

@@ -1,4 +1,4 @@
-import SignupForm from "@/components/auth/signup-form"
+import SignupForm from "@/components/forms/auth/signup-form"
 import { redirect } from "next/navigation"
 import { tokenLogIn } from "../actions/logging"
 

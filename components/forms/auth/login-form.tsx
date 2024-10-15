@@ -1,14 +1,15 @@
 "use client"
 
 import { logIn } from "@/app/actions/logging"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 import { toast } from "@/hooks/use-toast"
+import { User } from "@prisma/client"
 import { LoaderCircle } from "lucide-react"
 import React from "react"
-import { Button } from "../ui/button"
-import { Input } from "../ui/input"
 
 export default function LogInForm() {
-  const [data, setData] = React.useState<User & { password: string }>({
+  const [data, setData] = React.useState<Omit<User, "id" | "role" | "createdAt" | "updatedAt"> & { password: string }>({
     username: "",
     password: "",
     firstName: "",
