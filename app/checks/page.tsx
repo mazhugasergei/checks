@@ -1,10 +1,10 @@
 import { redirect } from "next/navigation"
-import { tokenLogIn } from "../actions/logging"
+import { tokenLogIn } from "../actions/logging.actions"
 import ChecksTable from "./checks-table"
 
 export default async function Checks() {
   const { user } = await tokenLogIn()
-  if (user?.role !== "admin") redirect("/")
+  if (!user) redirect("/login")
 
   return (
     <main>

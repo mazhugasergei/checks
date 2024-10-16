@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation"
-import { tokenLogIn } from "../actions/logging"
+import { tokenLogIn } from "../actions/logging.actions"
 
 export default async function Profile() {
   const { user } = await tokenLogIn()

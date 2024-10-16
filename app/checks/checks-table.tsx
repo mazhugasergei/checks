@@ -2,7 +2,6 @@
 
 import {
   AlertDialog,
-  AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
@@ -11,20 +10,23 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
-import { buttonVariants } from "@/components/ui/button"
+import { Button, buttonVariants } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Check } from "@prisma/client"
+import { toast } from "@/hooks/use-toast"
+import { Check, User } from "@prisma/client"
 import { format } from "date-fns"
-import { LoaderCircle } from "lucide-react"
+import { Check as CheckIcon, LoaderCircle, X } from "lucide-react"
 import React from "react"
+import { tokenLogIn } from "../actions/logging.actions"
 import Loading from "../loading"
 import { changeCheckPaid, deleteCheck, getChecks } from "./check.actions"
 
 export default function ChecksTable() {
   const [checks, setChecks] = React.useState<Check[] | null>()
 
-  const sortChecks = (data: Check[]) => {
+  const sortChecks = (data: Check[] | null) => {
+    if (!data) return null
     return data.sort((a, b) => {
       if (a.paid === b.paid) {
         return a.paid
@@ -41,13 +43,15 @@ export default function ChecksTable() {
     })
   }, [])
 
-  const handleUpdateCheckClient = (updatedCheck: Check) => {
+  const handleUpdateItemClient = (updatedCheck: Check) => {
     setChecks((prevChecks) =>
-      prevChecks ? sortChecks(prevChecks.map((check) => (check.id === updatedCheck.id ? updatedCheck : check))) : null
+      prevChecks
+        ? sortChecks(prevChecks.map((check) => (check.id === updatedCheck.id ? updatedCheck : check)))
+        : undefined
     )
   }
 
-  const handleDeleteCheckClient = async (id: number) => {
+  const handleDeleteItemClient = async (id: number) => {
     setChecks((prevChecks) => prevChecks?.filter((check) => check.id !== id))
   }
 
@@ -61,10 +65,11 @@ export default function ChecksTable() {
           <TableHead>Сумма</TableHead>
           <TableHead>Создан</TableHead>
           <TableHead className="text-center">Оплачен</TableHead>
-          <TableHead className="w-0" />
+          <TableHead className="w-0 p-0" />
         </TableRow>
       </TableHeader>
       <TableBody>
+        {/* loading */}
         {checks === undefined && (
           <TableRow>
             <TableCell colSpan={999}>
@@ -72,17 +77,21 @@ export default function ChecksTable() {
             </TableCell>
           </TableRow>
         )}
-        {checks === null && (
+        {/* no checks */}
+        {checks?.length === 0 && (
           <TableRow>
-            <TableCell colSpan={999}>Нет данных</TableCell>
+            <TableCell colSpan={999} className="text-center">
+              Нет расходников
+            </TableCell>
           </TableRow>
         )}
+        {/* checks */}
         {checks?.map((check) => (
-          <CheckRow
+          <DataRow
             key={check.id}
             check={check}
-            handleUpdateCheckClient={handleUpdateCheckClient}
-            handleDeleteCheckClient={handleDeleteCheckClient}
+            handleUpdateItemClient={handleUpdateItemClient}
+            handleDeleteItemClient={handleDeleteItemClient}
           />
         ))}
       </TableBody>
@@ -90,21 +99,26 @@ export default function ChecksTable() {
   )
 }
 
-const CheckRow = ({
+const DataRow = ({
   check: { id, name, basis, period, amount, createdAt, paid },
-  handleUpdateCheckClient,
-  handleDeleteCheckClient,
+  handleUpdateItemClient,
+  handleDeleteItemClient,
 }: {
   check: Check
-  handleUpdateCheckClient: (updatedCheck: Check) => void
-  handleDeleteCheckClient: (id: number) => void
+  handleUpdateItemClient: (updatedCheck: Check) => void
+  handleDeleteItemClient: (id: number) => void
 }) => {
+  const [user, setUser] = React.useState<Omit<User, "password"> | null>(null)
   const [checkPending, setCheckPending] = React.useState(false)
+
+  React.useEffect(() => {
+    tokenLogIn().then(({ user }) => setUser(user))
+  }, [])
 
   const handleCheckChange = async () => {
     setCheckPending(true)
     const updatedCheck = await changeCheckPaid(id)
-    handleUpdateCheckClient(updatedCheck)
+    handleUpdateItemClient(updatedCheck)
     setCheckPending(false)
   }
 
@@ -117,34 +131,38 @@ const CheckRow = ({
       <TableCell>{format(new Date(createdAt), "dd.MM.yyyy")}</TableCell>
       <TableCell className="px-0">
         <div className="grid place-items-center">
-          {checkPending ? (
-            <LoaderCircle size={16} className="animate-spin" />
-          ) : (
+          {user?.role !== "admin" && paid && <CheckIcon size={16} />}
+          {user?.role !== "admin" && !paid && <X size={16} />}
+          {user?.role === "admin" && checkPending && <LoaderCircle size={16} className="animate-spin" />}
+          {user?.role === "admin" && !checkPending && (
             <Checkbox checked={paid} onCheckedChange={handleCheckChange} className="block" />
           )}
         </div>
       </TableCell>
-      <TableCell>
-        <DeleteButton id={id} handleDeleteCheckClient={handleDeleteCheckClient} />
+      <TableCell className="px-0">
+        {(user?.role === "admin" || !paid) && <DeleteButton id={id} handleDeleteItemClient={handleDeleteItemClient} />}
       </TableCell>
     </TableRow>
   )
 }
 
-const DeleteButton = ({
-  id,
-  handleDeleteCheckClient,
-}: {
-  id: number
-  handleDeleteCheckClient: (id: number) => void
-}) => {
+const DeleteButton = ({ id, handleDeleteItemClient }: { id: number; handleDeleteItemClient: (id: number) => void }) => {
   const [deletePending, setDeletePending] = React.useState(false)
   const [alertDialogOpen, setAlertDialogOpen] = React.useState(false)
 
-  const handleDeleteCheck = async () => {
+  const handleDeleteItem = async () => {
     setDeletePending(true)
-    await deleteCheck(id)
-    handleDeleteCheckClient(id)
+    const { error } = await deleteCheck(id)
+    if (error)
+      toast({
+        title: "Ошибка",
+        description: error,
+        variant: "destructive",
+      })
+    else {
+      handleDeleteItemClient(id)
+      setAlertDialogOpen(false)
+    }
     setDeletePending(false)
   }
 
@@ -160,16 +178,9 @@ const DeleteButton = ({
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel disabled={deletePending}>Отмена</AlertDialogCancel>
-          <AlertDialogAction
-            disabled={deletePending}
-            onClick={async (e) => {
-              e.preventDefault()
-              await handleDeleteCheck()
-              setAlertDialogOpen(false)
-            }}
-          >
+          <Button disabled={deletePending} onClick={handleDeleteItem}>
             {deletePending ? <LoaderCircle size={16} className="animate-spin" /> : "Удалить"}
-          </AlertDialogAction>
+          </Button>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

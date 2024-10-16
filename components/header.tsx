@@ -1,6 +1,6 @@
 "use client"
 
-import { logOut, tokenLogIn } from "@/app/actions/logging"
+import { logOut, tokenLogIn } from "@/app/actions/logging.actions"
 import {
   Menubar,
   MenubarContent,

@@ -1,6 +1,6 @@
 "use client"
 
-import { tokenLogIn } from "@/app/actions/logging"
+import { tokenLogIn } from "@/app/actions/logging.actions"
 import React from "react"
 import { Skeleton } from "./ui/skeleton"
 

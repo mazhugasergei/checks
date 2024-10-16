@@ -1,10 +1,15 @@
 "use server"
 
+import { Check } from "@prisma/client"
+import { tokenLogIn } from "../actions/logging.actions"
 import prisma from "../db"
 
 export const getChecks = async () => {
+  const { user } = await tokenLogIn()
+  if (!user) return null
   return await prisma.check.findMany({
     include: { user: true },
+    where: user.role === "admin" ? undefined : { userId: user.id },
   })
 }
 
@@ -16,6 +21,11 @@ export const changeCheckPaid = async (id: number) => {
   })
 }
 
-export const deleteCheck = async (id: number) => {
-  return await prisma.check.delete({ where: { id } })
+export const deleteCheck = async (id: number): Promise<{ check?: Check; error?: string }> => {
+  const check = await prisma.check.findUnique({ where: { id } })
+  if (!check) return { error: "Расходник не существует или уже удален" }
+  const { user } = await tokenLogIn()
+  if (!user) return { error: "Вы не авторизованы" }
+  if (user.role !== "admin" && check.paid) return { error: "Вы не можете удалить оплаченный расходник" }
+  return { check: await prisma.check.delete({ where: { id } }) }
 }

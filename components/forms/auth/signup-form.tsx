@@ -1,6 +1,6 @@
 "use client"
 
-import { signUp } from "@/app/actions/logging"
+import { signUp } from "@/app/actions/logging.actions"
 import { PasswordInput } from "@/components/password-input"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"

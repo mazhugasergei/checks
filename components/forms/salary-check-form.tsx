@@ -1,6 +1,6 @@
 "use client"
 
-import { createCheck } from "@/app/actions/check"
+import { createCheck } from "@/app/actions/check.actions"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
