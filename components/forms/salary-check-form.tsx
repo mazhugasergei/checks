@@ -2,14 +2,11 @@
 
 import { createCheck } from "@/app/actions/check"
 import { Button } from "@/components/ui/button"
-import { Calendar } from "@/components/ui/calendar"
 import { Input } from "@/components/ui/input"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { toast } from "@/hooks/use-toast"
 import { Check, User } from "@prisma/client"
-import { format } from "date-fns"
-import { Calendar as CalendarIcon, LoaderCircle } from "lucide-react"
+import { LoaderCircle } from "lucide-react"
 import Link from "next/link"
 import React from "react"
 import { ToastAction } from "../ui/toast"
@@ -17,13 +14,13 @@ import { ToastAction } from "../ui/toast"
 export default function SalaryCheckForm({ user }: { user?: Omit<User, "password"> | null }) {
   const [submitting, setSubmitting] = React.useState(false)
 
-  const defaultData: Omit<Check, "id"> = {
+  const defaultData: Omit<Check, "id" | "updatedAt" | "createdAt"> = {
     name: user ? user.firstName + " " + (user.middleName ? `${user.middleName} ` : "") + user.lastName : "",
     basis: "",
     period: "",
     amount: "",
     userId: user ? user.id : null,
-    createdAt: new Date(),
+    paid: false,
   }
 
   const [data, setData] = React.useState(defaultData)
@@ -109,21 +106,6 @@ export default function SalaryCheckForm({ user }: { user?: Omit<User, "password"
           className="pr-8"
         />
         <span className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground">₽</span>
-      </div>
-
-      <div className="grid grid-cols-2 gap-2">
-        {/* date */}
-        <Popover>
-          <PopoverTrigger disabled asChild>
-            <Button variant="outline" className="justify-start font-normal">
-              <CalendarIcon className="mr-2 h-4 w-4" />
-              {format(data.createdAt, "dd MMMM yyyy")}
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-auto p-0">
-            <Calendar mode="single" selected={data.createdAt} initialFocus />
-          </PopoverContent>
-        </Popover>
       </div>
 
       <Button disabled={submitting}>
