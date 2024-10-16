@@ -75,13 +75,11 @@ export default function Header() {
               <MenubarSeparator />
 
               {/* checks */}
-              {user.role === "admin" && (
-                <MenubarItem asChild>
-                  <Link href="/checks" className="cursor-pointer">
-                    Расходники
-                  </Link>
-                </MenubarItem>
-              )}
+              <MenubarItem asChild>
+                <Link href="/checks" className="cursor-pointer">
+                  Расходники
+                </Link>
+              </MenubarItem>
 
               <MenubarSeparator />
 
