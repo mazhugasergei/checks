@@ -74,13 +74,6 @@ export default function Header() {
 
               <MenubarSeparator />
 
-              {/* profile */}
-              <MenubarItem asChild>
-                <Link href="/profile" className="cursor-pointer">
-                  Профиль
-                </Link>
-              </MenubarItem>
-
               {/* checks */}
               {user.role === "admin" && (
                 <MenubarItem asChild>
