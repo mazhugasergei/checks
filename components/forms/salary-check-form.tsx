@@ -31,7 +31,8 @@ export default function SalaryCheckForm({ user }: { user?: Omit<User, "password"
     await createCheck(data)
     setSubmitting(false)
     toast({
-      title: "Расходный кассовый ордер успешно создан",
+      title: "Заебумба",
+      description: "Расходник успешно создан",
       action: (
         <ToastAction altText="Расходники">
           <Link href="/checks">Расходники</Link>
