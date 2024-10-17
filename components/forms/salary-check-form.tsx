@@ -15,7 +15,10 @@ export default function SalaryCheckForm({ user }: { user?: Omit<User, "password"
   const [submitting, setSubmitting] = React.useState(false)
 
   const defaultData: Omit<Check, "id" | "updatedAt" | "createdAt"> = {
-    name: user ? user.firstName + " " + (user.middleName ? `${user.middleName} ` : "") + user.lastName : "",
+    name:
+      user && user.role !== "admin"
+        ? user.firstName + " " + (user.middleName ? `${user.middleName} ` : "") + user.lastName
+        : "",
     basis: "",
     period: "",
     amount: "",
@@ -49,11 +52,11 @@ export default function SalaryCheckForm({ user }: { user?: Omit<User, "password"
       {/* name */}
       <Input
         required
-        disabled={!!user}
+        disabled={user?.role !== "admin"}
         name="name"
         placeholder="Выдать"
         value={data.name}
-        onChange={(e) => (user ? null : setData({ ...data, name: e.target.value }))}
+        onChange={(e) => user?.role === "admin" && setData({ ...data, name: e.target.value })}
       />
 
       <div className="grid grid-cols-2 gap-2">
