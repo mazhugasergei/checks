@@ -1,6 +1,5 @@
 "use client"
 
-import { createCheck } from "@/app/actions/check.actions"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -9,7 +8,8 @@ import { Check, User } from "@prisma/client"
 import { LoaderCircle } from "lucide-react"
 import Link from "next/link"
 import React from "react"
-import { ToastAction } from "../ui/toast"
+import { ToastAction } from "../../components/ui/toast"
+import { createCheck } from "./check.actions"
 
 export default function SalaryCheckForm({ user }: { user?: Omit<User, "password"> | null }) {
   const [submitting, setSubmitting] = React.useState(false)

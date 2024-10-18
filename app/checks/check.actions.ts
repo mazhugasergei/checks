@@ -1,7 +1,7 @@
 "use server"
 
 import { Check } from "@prisma/client"
-import { tokenLogIn } from "../actions/logging.actions"
+import { tokenLogIn } from "../../components/forms/auth/logging.actions"
 import prisma from "../db"
 
 export const getChecks = async () => {
@@ -10,6 +10,12 @@ export const getChecks = async () => {
   return await prisma.check.findMany({
     include: { user: true },
     where: user.role === "admin" ? undefined : { userId: user.id },
+  })
+}
+
+export const createCheck = async (check: Omit<Check, "id" | "updatedAt" | "createdAt">) => {
+  return await prisma.check.create({
+    data: { ...check },
   })
 }
 

@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation"
-import { tokenLogIn } from "../actions/logging.actions"
+import { tokenLogIn } from "../../components/forms/auth/logging.actions"
 import ChecksTable from "./checks-table"
 
 export default async function Checks() {

@@ -18,7 +18,7 @@ import { Check, User } from "@prisma/client"
 import { format } from "date-fns"
 import { Check as CheckIcon, LoaderCircle, X } from "lucide-react"
 import React from "react"
-import { tokenLogIn } from "../actions/logging.actions"
+import { tokenLogIn } from "../../components/forms/auth/logging.actions"
 import Loading from "../loading"
 import { changeCheckPaid, deleteCheck, getChecks } from "./check.actions"
 
@@ -108,7 +108,7 @@ const DataRow = ({
   handleUpdateItemClient: (updatedCheck: Check) => void
   handleDeleteItemClient: (id: number) => void
 }) => {
-  const [user, setUser] = React.useState<Omit<User, "password"> | null>(null)
+  const [user, setUser] = React.useState<Omit<User, "password"> | null>()
   const [checkPending, setCheckPending] = React.useState(false)
 
   React.useEffect(() => {
