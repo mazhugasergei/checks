@@ -15,22 +15,23 @@ export default async function Header() {
       </nav>
 
       {/* not logged in */}
-      {!user && (
-        <div className="flex gap-2 items-center">
-          <Link href="/login" className={buttonVariants({ size: "sm", className: "!rounded-full" })}>
-            Войти
-          </Link>
-          <Link
-            href="/signup"
-            className={buttonVariants({ size: "sm", variant: "outline", className: "!rounded-full" })}
-          >
-            Регистрация
-          </Link>
-        </div>
-      )}
+      {!user && <LogInButtons />}
 
       {/* logged in */}
       {user && <ProfileMenu user={user} />}
     </header>
+  )
+}
+
+export const LogInButtons = () => {
+  return (
+    <div className="flex gap-2 items-center">
+      <Link href="/login" className={buttonVariants({ size: "sm", className: "!rounded-full" })}>
+        Войти
+      </Link>
+      <Link href="/signup" className={buttonVariants({ size: "sm", variant: "outline", className: "!rounded-full" })}>
+        Регистрация
+      </Link>
+    </div>
   )
 }
