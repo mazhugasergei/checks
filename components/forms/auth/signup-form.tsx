@@ -27,14 +27,17 @@ export default function SignUpForm() {
   const submit = async (e: React.FormEvent) => {
     e.preventDefault()
     setSubmitting(true)
-    await signUp(data).then(({ error }) => {
+    await signUp(data).then(({ user, error }) => {
       if (error)
         toast({
           title: error.title,
           description: error.description,
           variant: error.variant,
         })
-      else window.location.href = "/"
+      else {
+        user && toast({ title: `Добро пожаловать, ${user.firstName}`, description: "Регистрация прошла успешно" })
+        window.location.href = "/"
+      }
     })
     setSubmitting(false)
   }

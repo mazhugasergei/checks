@@ -22,9 +22,12 @@ export default function LogInForm() {
   const submit = async (e: React.FormEvent) => {
     e.preventDefault()
     setSubmitting(true)
-    await logIn(data).then(({ error }) => {
+    await logIn(data).then(({ user, error }) => {
       if (error) toast({ title: error.title })
-      else window.location.href = "/"
+      else {
+        user && toast({ title: `С возражением, ${user.firstName}`, description: "Авторизация прошла успешно" })
+        window.location.href = "/"
+      }
     })
     setSubmitting(false)
   }
