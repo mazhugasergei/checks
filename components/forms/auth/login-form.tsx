@@ -10,7 +10,7 @@ import { LoaderCircle } from "lucide-react"
 import React from "react"
 
 export default function LogInForm() {
-  const [data, setData] = React.useState<Omit<User, "id" | "role" | "createdAt" | "updatedAt"> & { password: string }>({
+  const [data, setData] = React.useState<Omit<User, "id" | "role" | "createdAt" | "updatedAt">>({
     username: "",
     password: "",
     firstName: "",
