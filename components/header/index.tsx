@@ -1,7 +1,6 @@
-import { tokenLogIn } from "@/app/actions/logging.actions"
+import { tokenLogIn } from "@/components/forms/auth/logging.actions"
 import Link from "next/link"
 import { buttonVariants } from "../ui/button"
-import { Skeleton } from "../ui/skeleton"
 import ProfileMenu from "./profile-menu"
 
 export default async function Header() {
@@ -15,11 +14,8 @@ export default async function Header() {
         </Link>
       </nav>
 
-      {/* loading */}
-      {user === undefined && <Skeleton className="h-8 w-20 rounded-full" />}
-
       {/* not logged in */}
-      {user === null && (
+      {!user && (
         <div className="flex gap-2 items-center">
           <Link href="/login" className={buttonVariants({ size: "sm", className: "!rounded-full" })}>
             Войти

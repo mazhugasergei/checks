@@ -1,6 +1,6 @@
 "use client"
 
-import { logIn } from "@/app/actions/logging.actions"
+import { logIn } from "@/components/forms/auth/logging.actions"
 import { PasswordInput } from "@/components/password-input"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -22,14 +22,9 @@ export default function LogInForm() {
   const submit = async (e: React.FormEvent) => {
     e.preventDefault()
     setSubmitting(true)
-    await logIn(data).then(({ success, error }) => {
-      if (success) window.location.href = "/"
-      if (error)
-        toast({
-          title: error.title,
-          description: error.description,
-          variant: error.destructive ? "destructive" : "default",
-        })
+    await logIn(data).then(({ error }) => {
+      if (error) toast({ title: error.title })
+      else window.location.href = "/"
     })
     setSubmitting(false)
   }

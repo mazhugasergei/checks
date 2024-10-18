@@ -1,6 +1,6 @@
 "use client"
 
-import { signUp } from "@/app/actions/logging.actions"
+import { signUp } from "@/components/forms/auth/logging.actions"
 import { PasswordInput } from "@/components/password-input"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -27,14 +27,14 @@ export default function SignUpForm() {
   const submit = async (e: React.FormEvent) => {
     e.preventDefault()
     setSubmitting(true)
-    await signUp(data).then(({ success, error }) => {
-      if (success) window.location.href = "/"
+    await signUp(data).then(({ error }) => {
       if (error)
         toast({
           title: error.title,
           description: error.description,
-          variant: error.destructive ? "destructive" : "default",
+          variant: error.variant,
         })
+      else window.location.href = "/"
     })
     setSubmitting(false)
   }

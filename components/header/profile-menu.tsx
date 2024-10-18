@@ -1,6 +1,6 @@
 "use client"
 
-import { logOut } from "@/app/actions/logging.actions"
+import { logOut } from "@/components/forms/auth/logging.actions"
 import {
   Menubar,
   MenubarContent,

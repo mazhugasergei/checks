@@ -1,11 +1,12 @@
 "use client"
 
-import { tokenLogIn } from "@/app/actions/logging.actions"
+import { tokenLogIn } from "@/components/forms/auth/logging.actions"
+import { User } from "@prisma/client"
 import React from "react"
 import { Skeleton } from "./ui/skeleton"
 
 export default function UserInfo() {
-  const [user, setUser] = React.useState<User | null>()
+  const [user, setUser] = React.useState<Omit<User, "password"> | null>()
 
   React.useEffect(() => {
     tokenLogIn().then(({ user }) => setUser(user))
